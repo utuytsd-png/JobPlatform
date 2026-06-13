@@ -61,7 +61,16 @@ class SecurityConfig(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration()
-        config.allowedOrigins = allowedOrigins.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        val origins = allowedOrigins.split(",")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+
+        if (origins.contains("*")) {
+            config.addAllowedOriginPattern("*")
+        } else {
+            config.allowedOrigins = origins
+        }
+
         config.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         config.allowedHeaders = listOf("*")
         config.exposedHeaders = listOf("Content-Disposition")
